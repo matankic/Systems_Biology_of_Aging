@@ -1,0 +1,125 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float} 
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings} 
+
+% --- Code Listing Style ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% --- Title Data ---
+\title{\textbf{The Cost of Solitude: Correcting for Survival Bias in the Systems Biology of Social Isolation}}
+\author{Ofir Razon and Matan Kichler}
+\date{Systems Biology of Aging -- Final Project -- February 2026}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question}
+
+The "Saturated Removal" (SR) model describes aging as a stochastic process governed by the balance between damage production ($\eta$) and removal capacity ($\beta$). Social isolation is a physiological stressor known to elevate cortisol and suppress immune function (Lecture 10). We hypothesize that isolation accelerates the accumulation of damage ($X$), leading to earlier mortality.
+
+Using a massive epidemiological dataset (NHANES 1999–2018, $N > 27,000$), we investigate the impact of social isolation (living alone) on mortality. Crucially, we address a common methodological pitfall in aging studies: \textbf{Left Truncation Bias}.
+
+\textbf{We ask the following multi-section question:}
+
+\begin{enumerate}
+    \item \textbf{The Naive Analysis:} When ignoring the age of entry into the study, does social isolation appear to affect survival differently in men and women?
+    \item \textbf{The "Immortal" Bias:} Isolating the female cohort, we observe that those living alone are significantly older at baseline than those living with others. How does this introduce a "Left Truncation" bias, and how can we mathematically correct the survival function $S(t)$ to account for delayed entry?
+    \item \textbf{The Corrected Dynamic:} After correcting for the bias, does the "protective" effect of isolation in females persist, or does the true cost of isolation reveal itself?
+    \item \textbf{Gompertz Parameter Analysis:} Using the corrected data, we fit the Gompertz law ($h(t) = h_0 e^{\alpha t}$). Does isolation primarily affect the rate of aging ($\alpha$) or the damage load ($\eta$), and is the effect severity sex-dependent?
+\end{enumerate}
+
+\newpage
+
+\section*{Answer}
+
+\subsection*{1. Naive Analysis and the "False Protection"}
+Our initial naive analysis (standard Kaplan-Meier on pooled data) yielded a puzzling result. While isolation appeared detrimental to men, the pooled curves overlapped significantly, and isolated females seemed to survive longer than connected females.
+This result contradicted established biology. We hypothesized that this was not a biological signal, but a statistical artifact driven by the age distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{fig1.png}
+    \caption{\textbf{Naive Kaplan-Meier survival curve (Pooled Population).} The curves overlap, masking the underlying dynamics. The isolated group (Red) falsely appears robust.}
+    \label{fig:naive}
+\end{figure}
+
+\subsection*{2. Identifying Left Truncation Bias}
+To investigate the anomaly, we analyzed the age distribution at the time of survey entry (Figure \ref{fig:bias}).
+\begin{itemize}
+    \item \textbf{Observation:} Isolated females entered the study at an average age of \textbf{70.8 years}, whereas connected females entered at \textbf{64.5 years}.
+    \item \textbf{The Error:} A naive survival model assumes observation starts at birth ($t=0$). By including 70-year-old women and treating them as if we tracked them from birth, the model grants them "credit" for surviving 70 years without death. This artificially inflates the survival curve for the "Isolated" group, as they are a self-selected cohort of survivors.
+    \item \textbf{The Fix:} We applied \textbf{Left Truncation Correction} (Delayed Entry). The risk set was adjusted so that individuals only contribute to the survival calculation \textit{after} their specific age of entry ($t_{entry}$).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{fig4.png}
+    \caption{\textbf{Evidence of Survival Bias.} Isolated females are significantly older at baseline ($+6.4$ years) than connected females. This creates an "Immortal Time" bias if not corrected.}
+    \label{fig:bias}
+\end{figure}
+
+\subsection*{3. The Corrected Reality}
+Upon applying the mathematical correction for entry age, the "protective" effect of isolation in females vanished.
+\begin{itemize}
+    \item \textbf{Males:} Isolation remains highly fatal. The survival curve for isolated men drops precipitously compared to connected men.
+    \item \textbf{Females:} The corrected curve now shows that isolation is detrimental for women as well, though the effect size is smaller than in men.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig2.png}
+    \caption{\textbf{Corrected Kaplan-Meier Analysis.} After accounting for entry age, isolation is revealed as a mortality risk for \textit{both} sexes. The effect is notably more severe in males (Left) than in females (Right).}
+    \label{fig:corrected_km}
+\end{figure}
+
+\subsection*{4. Gompertz Law and SR Model Interpretation}
+We performed a corrected Log-Cumulative Hazard analysis (Figure \ref{fig:gompertz}).
+\begin{itemize}
+    \item \textbf{Scaling Effect:} The primary signature of isolation is an upward shift of the line (higher intercept $h_0$) rather than a change in slope ($\alpha$).
+    \item \textbf{SR Model Interpretation:} In the Saturated Removal model, a parallel shift ("Scaling") corresponds to an increase in the \textbf{Damage Production Rate ($\eta$)}. This suggests isolation acts as a constant stressor—likely mediated by chronic cortisol elevation or inflammation—that adds a fixed load of damage per unit time.
+    \item \textbf{Sex Specificity:} Men show a larger "Scaling Shift" than women. This implies that men may be biologically less robust to the stress of social isolation, or that they lack the compensatory social mechanisms that women might maintain even when living alone.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig3.png}
+    \caption{\textbf{Corrected Gompertz Analysis.} Both genders show "Scaling" (parallel shift), indicating increased damage production ($\eta$). The magnitude of the shift is larger in men.}
+    \label{fig:gompertz}
+\end{figure}
+
+
+\end{document}
