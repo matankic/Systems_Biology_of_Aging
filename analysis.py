@@ -1,151 +1,3 @@
-\documentclass[11pt, a4paper]{article}
-
-% --- Packages ---
-\usepackage[utf8]{inputenc}
-\usepackage{geometry}
-\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
-\usepackage{graphicx} % Standard graphics package
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{float} 
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{listings}
-
-% --- Code Listing Style ---
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
-}
-\lstset{style=mystyle}
-
-% --- Title Data ---
-\title{\textbf{Correcting for Survival Bias in the Systems Biology of Social Isolation}}
-\author{Ofir Razon and Matan Kichler}
-\date{Systems Biology of Aging -- Final Project -- February 2026}
-
-\begin{document}
-
-\maketitle
-
-\section*{Question}
-
-The "Saturated Removal" (SR) model describes aging as a stochastic process governed by the balance between damage production ($\eta$) and removal capacity ($\beta$). In \textbf{Lecture 12: Friends, Stress and Wisdom}, we learned that social isolation is a physiological stressor known to elevate cortisol and suppress immune function, which in turn accelerates the accumulation of damage ($X$), leading to earlier mortality.
-
-Using a \href{https://ftp.cdc.gov/pub/health_statistics/nchs/datalinkage/linked_mortality/}{massive epidemiological dataset} (NHANES 1999–2018, $N > 27,000$), we investigate the impact of social isolation (living alone) on mortality. Crucially, we address common methodological pitfalls including Left Truncation Bias and hidden demographic drivers.
-
-\textbf{We ask the following multi-section question:}
-
-\begin{enumerate}
-    \item \textbf{The Naive Analysis:} When analyzing the pooled population (ignoring entry age), does social isolation appear to decrease survival, and does this aggregation obscure specific sex-dependent dynamics?
-    \item \textbf{The "Immortal" Bias:} Isolating the female cohort, we observe that those living alone are significantly older at baseline than those living with others. How does this introduce a "Left Truncation" bias that might underestimate the true mortality risk?
-    \item \textbf{The Corrected Dynamic \& Sex Vulnerability:} How can we mathematically correct the survival function $S(t)$ to account for delayed entry? Once corrected, does the "protective" effect in females vanish, and is there a significant difference in the severity of the isolation penalty between sexes?
-    \item \textbf{Age-Dependent Effects at the Extremes:} Does the impact of isolation remain constant across the lifespan, or does it diminish at extreme old age (e.g., $>85$ years)? If the survival curves converge at late ages, what biological or sociological factors might explain this phenomenon?
-    \item \textbf{Gompertz Parameter Analysis:} Using the corrected data, fit the Gompertz law ($h(t) = h_0 e^{\alpha t}$). Does isolation primarily affect the rate of aging ($\alpha$) or the damage load ($\eta$)?
-\end{enumerate}
-
-\newpage
-
-\section*{Answer}
-
-\subsection*{1. Naive Analysis: An Incomplete Picture}
-Our initial naive analysis (standard Kaplan-Meier on pooled data) indicated that social isolation is indeed a risk factor. However, this pooled view assumes a uniform entry into the aging process. Given demographic differences in lifespan and living arrangements, we hypothesized this aggregate curve might be "dampened" by a survivor bias, potentially underestimating the true biological cost of isolation.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{fig1.png}
-    \caption{\textbf{Naive Kaplan-Meier survival curve (Pooled Population).} The isolated group (Red) shows reduced survival compared to the connected group (Blue), but this plot does not account for entry-age bias or sex differences.}
-    \label{fig:naive}
-\end{figure}
-
-\subsection*{2. Identifying Left Truncation Bias}
-To investigate potential biases, we analyzed the age distribution at study entry (Figure \ref{fig:bias}). Isolated females entered the study on average \textbf{6.4 years later} than connected females.
-A naive model grants these women "credit" for surviving decades before observation began. This artificial "immortal time" inflates the survival curve for the isolated group, masking the true risk. We applied \textbf{Left Truncation Correction} to adjust the risk set based on age of entry.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{fig4.png}
-    \caption{\textbf{Evidence of Survival Bias.} Isolated females are significantly older at baseline than connected females, creating a bias that must be corrected.}
-    \label{fig:bias}
-\end{figure}
-
-\subsection*{3. The Corrected Reality and Sex-Specific Vulnerability}
-Upon applying the correction, the true severity of isolation was revealed (Figure \ref{fig:corrected_km}).
-
-\textbf{Observation:} Social isolation reduces survival for \textbf{both} sexes, but the effect is drastically different in magnitude.
-\begin{itemize}
-    \item \textbf{Males (High Vulnerability):} Isolation is catastrophic for men. The survival gap opens early and widens rapidly.
-    \item \textbf{Females (Moderate Vulnerability):} The corrected curve confirms isolation is a risk, debunking the naive "protective" effect, but the gap is much smaller than in men.
-\end{itemize}
-
-\textbf{Interpretation:} This suggests a profound biological or sociological difference in response to isolation. Biologically, males may have a less robust physiological response to chronic psychosocial stress (e.g., higher inflammatory reactivity). Sociologically, "connection" often provides different benefits by sex; for older men, a spouse is often the primary caregiver and health manager. Losing that connection is a severe shock to health maintenance.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig2.png}
-    \caption{\textbf{Corrected Kaplan-Meier Analysis.} After accounting for entry age, isolation is a risk for both, but notably more severe in males (Left) than in females (Right).}
-    \label{fig:corrected_km}
-\end{figure}
-
-\subsection*{4. Age-Dependent Effects at the Extremes}
-To visualize how the impact changes with age, we plotted the "Survival Advantage of Connection" ($S(t)_{Connected} - S(t)_{Isolated}$) over time (Figure \ref{fig:advantage}).
-
-\textbf{Observation:}
-\begin{itemize}
-    \item \textbf{Males:} The advantage of connection is massive and sustained throughout old age.
-    \item \textbf{Females:} The advantage is moderate in middle-old age but diminishes significantly after age 85, with the curves nearly converging toward 95.
-\end{itemize}
-
-\textbf{Interpretation of Convergence at $>85$:}
-At extreme old age, the nature of "connection" and "isolation" changes.
-1.  \textbf{Selection for Robustness:} Living alone at age 90 requires a high baseline of functional health (a high critical threshold $X_c$). These are functionally independent "Super Agers."
-2.  \textbf{Dependence of Connection:} Conversely, among the extremely elderly, living with others ("Connected") often signifies dependence due to frailty or cognitive decline, where family provides necessary care.
-Thus, at extreme ages, the biological damage of isolation may be counterbalanced by the fact that only the healthiest individuals remain capable of living alone.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{fig5.png}
-    \caption{\textbf{The Survival Advantage of Connection over Time.} The plot shows the difference in survival probability ($S_{conn} - S_{iso}$). The gap is massive for males. For females, the gap narrows significantly after age 85, suggesting a convergence in mortality rates at extreme old age.}
-    \label{fig:advantage}
-\end{figure}
-
-\subsection*{5. Gompertz Law and SR Model Interpretation}
-We performed a corrected Log-Cumulative Hazard analysis (Figure \ref{fig:gompertz}).
-\begin{itemize}
-    \item \textbf{Scaling Effect:} The primary signature of isolation is an upward shift of the line (higher intercept $h_0$, known as "Scaling") rather than a major change in the slope ($\alpha$).
-    \item \textbf{SR Model Interpretation:} A parallel shift implies an increase in the \textbf{Damage Production Rate ($\eta$)}. Isolation acts as a constant metabolic stressor, adding a fixed load of damage per unit time, rather than accelerating the rate of system failure itself. The larger shift in men confirms the higher damage load they experience from isolation.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig3.png}
-    \caption{\textbf{Corrected Gompertz Analysis.} Both genders show "Scaling" (parallel shift), indicating increased damage production ($\eta$). The magnitude of the shift is larger in men.}
-    \label{fig:gompertz}
-\end{figure}
-
-\newpage
-\section*{Appendix: Python Code}
-
-\begin{lstlisting}[language=Python]
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -361,6 +213,7 @@ plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, 'fig2.png'))
 
 
+
 # --- Figure 3: Gompertz Analysis (Log-Cumulative Hazard) ---
 plt.figure(figsize=(14, 6))
 naf = NelsonAalenFitter()
@@ -425,6 +278,7 @@ plt.grid(True, alpha=0.3)
 plt.legend(title='Status')
 plt.savefig(os.path.join(OUTPUT_DIR, 'fig4.png'))
 
+
 # Print mean ages for verification
 print("Mean Age by Group:")
 print(df.groupby(['Gender', 'Group'])['RIDAGEYR'].mean())
@@ -477,8 +331,5 @@ plt.grid(True, alpha=0.3)
 plt.ylim(-0.05, 0.30)
 plt.savefig(os.path.join(OUTPUT_DIR, 'fig5.png'))
 
+
 print("Analysis Complete.")
-
-\end{lstlisting}
-
-\end{document}
